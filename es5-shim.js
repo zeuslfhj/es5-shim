@@ -1039,12 +1039,23 @@
         return toStr(value) === '[object Arguments]';
     };
     var isLegacyArguments = function isArguments(value) {
-        return value !== null &&
+        var ret = (
+            value !== null &&
             typeof value === 'object' &&
             typeof value.length === 'number' &&
             value.length >= 0 &&
-            !isArray(value) &&
-            isCallable(value.callee);
+            !isArray(value)
+        );
+
+        // when using value.callee, the IE7 and IE8 may throw an error of 'permission denied'
+        // then just return false
+        try{
+            ret = ret && isCallable(value.callee);
+        } catch (e) {
+            return false;
+        }
+
+        return ret;
     };
     var isArguments = isStandardArguments(arguments) ? isStandardArguments : isLegacyArguments;
 
